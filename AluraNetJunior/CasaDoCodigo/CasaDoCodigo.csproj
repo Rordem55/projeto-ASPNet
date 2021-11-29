@@ -6,6 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20211129205128_TabelaCategoriaERelacionamentos.cs" />
+    <Compile Remove="Migrations\20211129205128_TabelaCategoriaERelacionamentos.Designer.cs" />
+    <Compile Remove="Migrations\20211129205845_TabelaCategoriaERelacionamentos.cs" />
+    <Compile Remove="Migrations\20211129205845_TabelaCategoriaERelacionamentos.Designer.cs" />
+    <Compile Remove="Migrations\20211129210408_TabelaCategoriaERelacionamentos.cs" />
+    <Compile Remove="Migrations\20211129210408_TabelaCategoriaERelacionamentos.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="middlewares.png" />
     <None Remove="pipeline.png" />
   </ItemGroup>
