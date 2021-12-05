@@ -1,9 +1,12 @@
 ﻿using CasaDoCodigo.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
+using CasaDoCodigo.Models.ViewModels;
 
 namespace CasaDoCodigo.Repositories
 {
@@ -15,14 +18,50 @@ namespace CasaDoCodigo.Repositories
             _categoriaRepository = categoriaRepository;
         }
 
+        public async Task<BuscaDeProdutosViewModel> BuscaDeProdutoViewModel(string termo)
+        {
+            var produtos = await this.GetProdutos(termo);
+            var categoriasDeProdutosIds = this.GetCategoriasDeProdutosIds(produtos);
+            var categorias = _categoriaRepository.GetCategoriaPorListaId(categoriasDeProdutosIds);
+
+            return new BuscaDeProdutosViewModel(produtos, categorias, termo);
+        }
+
+        public  IList<int> GetCategoriasDeProdutosIds(IList<Produto> produtos)
+        {
+            var listaIds =  from produto in produtos select produto.CategoriaId;
+            return listaIds.Distinct().ToList();
+        }
+
         public IList<Produto> GetProdutos()
         {
             return dbSet.ToList();
         }
 
-        public IList<Produto> GetProdutosComCategorias()
+        public async Task<IList<Produto>> GetProdutos(string termo)
         {
-            return dbSet.Include(p => p.Categoria).ToList();
+            IEnumerable<Produto> produtos = new List<Produto>();
+            produtos = await this.GetProdutosComCategoriasAsync();
+
+            if (termo != null && termo != "")
+            {
+                produtos = from produto in produtos
+                           where produto.Nome.ToUpper().Contains(termo.ToUpper()) ||
+                           produto.Categoria.Nome.ToUpper().Contains(termo.ToUpper())
+                           select produto;
+            }
+
+            if (produtos == null)
+            {
+                throw new ArgumentException("Nenhum produto encontrado");
+            }
+
+            return produtos.ToList();
+        }
+
+        public async Task<IList<Produto>> GetProdutosComCategoriasAsync()
+        {
+            return await dbSet.Include(p => p.Categoria).ToListAsync();
         }
 
         public async Task SaveProdutos(List<Livro> livros)
@@ -41,6 +80,7 @@ namespace CasaDoCodigo.Repositories
             }
             await contexto.SaveChangesAsync();
         }
+
     }
 
     public class Livro

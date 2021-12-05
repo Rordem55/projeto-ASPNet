@@ -3,86 +3,108 @@
 *@
 
 
-@model List<Produto>;
+@model BuscaDeProdutosViewModel;
+<div id="topo-propriedades">
+    @{
+        IEnumerable<Produto> produtos = Model.Produtos;
+        IEnumerable<Categoria> categorias = Model.Categorias;
+        string termo = Model.Termo;
 
-<div class="container">
-    <div class="row">
-        <div class="col-md-4">
-            <h2>Buscar produtos</h2>
-            <div id="custom-search-input">
-                <div class="input-group col-md-12">
-                    <input type="text" name="pesquisa" class="form-control input-lg" placeholder="categoria ou produto" id="Pesquisa" value="" />
-                    <span class="input-group-btn">
-                        <button class="btn btn-info btn-lg" type="submit">
-                            <i class="glyphicon glyphicon-search"></i>
-                        </button>
-                    </span>
+        const int TAMANHO_PAGINA = 4;
+
+        int produtoCodCategoriaTotal = produtos.Select(p => p.Categoria).Distinct().Count();
+        //IEnumerable<int> enumCodCategoria = produtos.OrderBy(p => p.Id).Select(p => p.Categoria.Id).Distinct();
+        //IEnumerable<string> enumNomeCategoria = Model.Produtos.OrderBy(p => p.Id).Select(p => p.Categoria.Nome).Distinct();
+    }
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h2>Buscar produtos</h2>
+                <div id="custom-search-input">
+                    <div class="input-group col-md-12">
+                        <input type="text" name="pesquisa" class="form-control input-lg"
+                               placeholder="categoria ou produto" form-id="Pesquisa" value=@Model.Termo />
+                        <span class="input-group-btn">
+                            <button class="btn btn-info btn-lg" type="submit" onclick="_buscaDeProdutos.updatePesquisa(this)">
+                                <i class="glyphicon glyphicon-search"></i>
+                            </button>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-@{
-    const int TAMANHO_PAGINA = 4;
-    int produtoCodCategoriaTotal = Model.Select(p => p.Categoria).Distinct().Count();
-    IEnumerable<int> enumCodCategoria = Model.OrderBy(p => p.Id).Select(p => p.Categoria.Id).Distinct();
-    IEnumerable<string> enumNomeCategoria = Model.OrderBy(p => p.Id).Select(p => p.Categoria.Nome).Distinct();
-}
+    @for (int indiceCarrossel = 1; indiceCarrossel < produtoCodCategoriaTotal + 1; indiceCarrossel++)
+    {
+        <div>
+            <h3>
+                @categorias.ElementAt(indiceCarrossel - 1).Nome;
+            </h3>
+        </div>
+        <div>
+            @{
+                int paginas = (int)Math.Ceiling(
+                    (double)produtos.Where(p => p.Categoria.Id == categorias.ElementAt(indiceCarrossel - 1).Id).Count()
+                    / TAMANHO_PAGINA);
+            }
+        </div>
 
-@for (int indiceCarrossel = 1; indiceCarrossel < produtoCodCategoriaTotal + 1; indiceCarrossel++)
-{
-    <div><h3>
-        @enumNomeCategoria.ElementAt(indiceCarrossel-1)
-    </h3></div>     
-    <div>
-        @{
-            int paginas = (int)Math.Ceiling((double)Model.Where(p => p.Categoria.Id == enumCodCategoria.ElementAt(indiceCarrossel - 1)).Count() / TAMANHO_PAGINA);
-        }
-    </div>
-    
-    <div id="my-carousel-@indiceCarrossel" class="carousel slide" data-ride="carousel">
-        <!-- Wrapper for slides -->
-        <div class="carousel-inner" role="listbox">
-            @for (int pagina = 0; pagina < paginas; pagina++)
-            {
-                <div class="item @(pagina == 0 ? "active" : "")">
-                    <div class="row">
+        <div id="my-carousel-@indiceCarrossel" class="carousel slide" data-ride="carousel">
+            <!-- Wrapper for slides -->
+            <div class="carousel-inner" role="listbox">
+                @for (int pagina = 0; pagina < paginas; pagina++)
+                {
+                    <div class="item @(pagina == 0 ? "active" : "")">
+                        <div class="row">
 
-                        @{  
-                            var produtosDaPagina = Model.Where(p => p.Categoria.Id == enumCodCategoria.ElementAt(indiceCarrossel - 1)).Skip(pagina * TAMANHO_PAGINA).Take(TAMANHO_PAGINA);
-                        }
+                            @{
+                                var produtosDaPagina = produtos.Where(p => p.Categoria.Id == categorias.ElementAt(indiceCarrossel - 1).Id)
+                                                               .Skip(pagina * TAMANHO_PAGINA)
+                                                               .Take(TAMANHO_PAGINA);
+                            }
 
-                        @foreach (var produto in produtosDaPagina)
-                        {
-                            <div class="col-md-3 col-sm-3 col-lg-3">
-                                <div class="panel panel-default">
-                                    <div class="panel-body">
-                                        <img class="img-produto-carrossel" src="/images/produtos/large_@(produto.Codigo).jpg" />
-                                    </div>
-                                    <div class="panel-footer produto-footer">
-                                        <div class="produto-nome">@produto.Nome</div>
-                                        <div><h4><strong>R$ @produto.Preco</strong></h4></div>
-                                        <div class="text-center">
-                                            <a class="btn btn-success">Adicionar</a>
+                            @foreach (var produto in produtosDaPagina)
+                            {
+                                <div class="col-md-3 col-sm-3 col-lg-3">
+                                    <div class="panel panel-default">
+                                        <div class="panel-body" id="imagem">
+                                            <img class="img-produto-carrossel" src="/images/produtos/large_@(produto.Codigo).jpg" />
+                                        </div>
+                                        <div class="panel-footer produto-footer">
+                                            <div class="produto-nome">@produto.Nome</div>
+                                            <div><h4><strong>R$ @produto.Preco</strong></h4></div>
+                                            <div class="text-center">
+                                                <a class="btn btn-success">Adicionar</a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        }
+                            }
+                        </div>
                     </div>
-                </div>
-            }
+                }
+            </div>
+            <a class="left carousel-control" href="#my-carousel-@indiceCarrossel" role="button" data-slide="prev">
+                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="right carousel-control" href="#my-carousel-@indiceCarrossel" role="button" data-slide="next">
+                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
         </div>
-        <a class="left carousel-control" href="#my-carousel-@indiceCarrossel" role="button" data-slide="prev">
-            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-            <span class="sr-only">Previous</span>
-        </a>
-        <a class="right carousel-control" href="#my-carousel-@indiceCarrossel" role="button" data-slide="next">
-            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
-        </a>
-    </div>
+
+    }
+</div>
+
+
+
+@section Scripts
+    {
+    <script src="~/js/buscaDeProdutos.js">
+    </script>
 }
 
 

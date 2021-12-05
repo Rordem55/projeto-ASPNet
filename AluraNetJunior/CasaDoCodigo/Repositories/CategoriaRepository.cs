@@ -9,8 +9,13 @@ namespace CasaDoCodigo.Repositories
 {
     public interface ICategoriaRepository
     {
-        Categoria GetCategoria(string categoriaNome);
+        IList<Categoria> GetCategorias();
+        Categoria GetCategoriaPorNome(string categoriaNome);
+        Categoria GetCategoriaPorId(int categoriaId);
+        IList<Categoria> GetCategoriaPorListaId(IList<int> categoriaIds);
         Task SaveCategoria(string categoriaNome);
+
+
     }
 
     public class CategoriaRepository : BaseRepository<Categoria>, ICategoriaRepository
@@ -21,21 +26,42 @@ namespace CasaDoCodigo.Repositories
         {
         }
 
-        public Categoria GetCategoria(string categoriaNome)
+        public Categoria GetCategoriaPorNome(string categoriaNome)
         {
             var categoria = dbSet.Where(c => c.Nome == categoriaNome).SingleOrDefault();
             return categoria;
         }
 
+        public Categoria GetCategoriaPorId(int categoriaId)
+        {
+            var categoria = dbSet.Where(c => c.Id == categoriaId).SingleOrDefault();
+            return categoria;
+        }
+
+        public IList<Categoria> GetCategoriaPorListaId(IList<int> categoriaIds)
+        {
+            var listaCategorias = new List<Categoria>();
+            foreach (int id in categoriaIds)
+            {
+                listaCategorias.Add(this.GetCategoriaPorId(id));
+            }
+            return listaCategorias;
+        }
+
         public async Task SaveCategoria(string categoriaNome)
         {
-            var  categoriadB = GetCategoria(categoriaNome);
+            var  categoriadB = GetCategoriaPorNome(categoriaNome);
             if (categoriadB == null)
             {
                 dbSet.Add(new Categoria(categoriaNome));
                 await contexto.SaveChangesAsync();
             }
             
+        }
+
+        public IList<Categoria> GetCategorias()
+        {
+            return dbSet.ToList();
         }
     }
 }
