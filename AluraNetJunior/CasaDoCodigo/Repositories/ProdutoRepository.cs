@@ -48,15 +48,17 @@ namespace CasaDoCodigo.Repositories
                 produtos = from produto in produtos
                            where produto.Nome.ToUpper().Contains(termo.ToUpper()) ||
                            produto.Categoria.Nome.ToUpper().Contains(termo.ToUpper())
-                           select produto;
+                           select produto;            
             }
-
+            
             if (produtos == null)
             {
-                throw new ArgumentException("Nenhum produto encontrado");
+                //throw new ArgumentException("Nenhum produto encontrado");
+                return null;
             }
-
             return produtos.ToList();
+
+
         }
 
         public async Task<IList<Produto>> GetProdutosComCategoriasAsync()

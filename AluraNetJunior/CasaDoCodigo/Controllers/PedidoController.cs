@@ -86,7 +86,7 @@ namespace CasaDoCodigo.Controllers
         [HttpPost]
         public async Task<BuscaDeProdutosViewModel> BuscaDeProdutosPost([FromBody] string termo)
         {
-           return await produtoRepository.BuscaDeProdutoViewModel(termo);
+            return await produtoRepository.BuscaDeProdutoViewModel(termo);
         }
 
     }

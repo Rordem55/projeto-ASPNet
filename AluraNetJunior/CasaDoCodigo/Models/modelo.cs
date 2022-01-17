@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -14,22 +15,32 @@ namespace CasaDoCodigo.Models
         public int Id { get; protected set; }
     }
 
+    
     public class Produto : BaseModel
     {
         public Produto()
         {
 
         }
+        [Required]
+        [DataMember]
+        public string Codigo { get; private set; }
+        
+        [Required]
+        [DataMember]
+        public string Nome { get; private set; }
 
         [Required]
-        public string Codigo { get; private set; }
-        [Required]
-        public string Nome { get; private set; }
-        [Required]
+        [DataMember]
         public decimal Preco { get; private set; }
+
         [Required]
+        [DataMember]
+        //[JsonProperty("CategoriaId")]
         public int CategoriaId { get; private set; }
+        
         [Required]
+        //[JsonProperty("Categoria")]
         public Categoria Categoria { get; private set; }
 
         public Produto(string codigo, string nome, decimal preco, Categoria categoria)
@@ -142,6 +153,7 @@ namespace CasaDoCodigo.Models
     public class Categoria: BaseModel
     {
         [Required]
+        [JsonProperty("Nome")]
         public string Nome { get; private set; }
 
         public Categoria()

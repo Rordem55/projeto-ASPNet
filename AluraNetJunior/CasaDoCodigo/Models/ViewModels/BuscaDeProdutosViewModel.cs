@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace CasaDoCodigo.Models.ViewModels
@@ -21,9 +23,17 @@ namespace CasaDoCodigo.Models.ViewModels
             Termo = termo;
         }
 
-       public  IList<Produto> Produtos { get; }
-       public IList<Categoria> Categorias { get; }
-       public string Termo { get; }
+        [DataMember]
+        //[JsonProperty("Produto")]
+        public  IList<Produto> Produtos { get; }
+
+        [DataMember]
+        //[JsonProperty("Categoria")]
+        public IList<Categoria> Categorias { get; }
+        
+        [DataMember]
+        //[JsonProperty("Termo")]
+        public string Termo { get; }
 
     }
 }

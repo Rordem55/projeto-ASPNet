@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\UpdateQuantidadeResponse.cs" />
     <Compile Remove="Migrations\20211129205128_TabelaCategoriaERelacionamentos.cs" />
     <Compile Remove="Migrations\20211129205128_TabelaCategoriaERelacionamentos.Designer.cs" />
     <Compile Remove="Migrations\20211129205845_TabelaCategoriaERelacionamentos.cs" />
